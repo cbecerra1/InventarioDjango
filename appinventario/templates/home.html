@@ -25,6 +25,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <script src="{% static 'lib/adminlte-3.1/plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
     <!-- AdminLTE App -->
     <script src="{% static 'lib/adminlte-3.1/js/adminlte.min.js' %}"></script>
+
+    <!-- Block Head -->
+    {% block head %}
+      
+    {% endblock head %}
+
 </head>
 
 {% block body %}

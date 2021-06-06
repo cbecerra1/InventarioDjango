@@ -1,4 +1,14 @@
 {% extends "body.html" %}
+{% load static %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'lib/datatables-1.10.20/css/dataTables.bootstrap4.min.css' %}" />
+<link rel="stylesheet"
+    href="{% static 'lib/datatables-1.10.20/plugins/responsive-2.2.3/css/responsive.bootstrap4.min.css' %}" />
+<script src="{% static 'lib/datatables-1.10.20/js/jquery.dataTables.js' %}"></script>
+<script src="{% static 'lib/datatables-1.10.20/js/dataTables.bootstrap4.min.js' %}"></script>
+<script src="{% static 'lib/datatables-1.10.20/plugins/responsive-2.2.3/js/dataTables.responsive.min.js' %}"></script>
+<script src="{% static 'lib/datatables-1.10.20/plugins/responsive-2.2.3/js/responsive.bootstrap4.min.js' %}"></script>
+{% endblock head %}
 
 {% block content %}
 <div class="card card-default">
@@ -10,7 +20,7 @@
     </div>
     <!-- /.card-header -->
     <div class="card-body">
-        <table class="table">
+        <table class="table" id="data">
             <thead>
                 {% block columns %}
 
@@ -24,8 +34,38 @@
         </table>
     </div>
     <div class="card-footer">
-        <button class="btn btn-primary btn-flat"><i class="fas fa-plus"></i> Nuevo registro</button>
+        <button class="btn btn-primary btn-flat btnTest">
+            <i class="fas fa-plus"></i> Nuevo registro
+        </button>
     </div>
     <!-- /.card-body -->
 </div>
 {% endblock content %}
+
+<!-- Para cargar la tabla-Block Javascript -->
+{% block javascript %}
+<!-- Uso codigo Javascript -->
+<script type="application/javascript">
+    $(function () {
+        $('#data').DataTable({
+            responsive: true,
+            autoWidth: false
+        });
+
+        $('.btnTest').on('click', function () {
+            $.ajax({
+                url: '{% url "erp:category_list" %}',
+                type: 'POST',
+                data: { id: 1 },
+                dataType: 'json'
+            }).done(function (data) {
+                console.log(data)
+            }).fail(function (jqXHR, textStatus, errorThrown) {
+                alert(textStatus+': '+errorThrown);
+            }).always(function (data) {
+
+            });
+        });
+    });
+</script>
+{% endblock javascript %}

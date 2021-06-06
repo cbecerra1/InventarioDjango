@@ -1,5 +1,6 @@
 from django.db import models
 from datetime import datetime
+from django.forms import model_to_dict
 
 from .choices import gender_choices
 
@@ -10,6 +11,11 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
+
+    #El sighiente metodo me devuelve un diccionario con todos los atributos que tiene mi entidad
+    def toJSON(self):
+        item = model_to_dict(self) #Self contiene la entidad en si, entonces me pasa todo a diccionario
+        return item
 
     class Meta:
         verbose_name = 'Categoria'
