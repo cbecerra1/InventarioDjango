@@ -1,3 +1,5 @@
+from django.core import exceptions
+from django.core.exceptions import EmptyResultSet
 from django.forms import *
 from .models import Category
 
@@ -34,3 +36,16 @@ class CategoryForm(ModelForm):
                 }
             )
         }
+    
+    #Metodo para guardar los datos
+    def save(self, commit= True):
+        data = {} #Creamos una variable para saber si tiene errores o no
+        form = super() #REcuperamos el formulario
+        try:
+            if form.is_valid():
+                form.save()
+            else:
+                data['error']=form.errors
+        except Exception as e:
+            data['error'] = str(e)
+        return data

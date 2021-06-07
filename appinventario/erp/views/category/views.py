@@ -64,7 +64,19 @@ class CategoryCreateView(CreateView):
     success_url = reverse_lazy('erp:category_list')#Donde redirecciono la plantilla luego de guardar, 
 
     #Ejemplo, metodo post para los errores
-    #def post(self, request, *args, **kwargs):
+    def post(self, request, *arg, **kwargs):
+        data = {}
+        try:
+            #Recuperamos la variable action, me sale en el diccionario que me arroja ajax
+            action = request.POST['action']#Cada vez que alguien haga una peticion me manda un action para saber que se va a a hacer
+            if action == 'add':
+                form = self.get_form() #Obtenemos el formulario ccon tdos los datos
+                data = form.save()
+            else:
+                data['error'] = 'No ha ingresado a ninguna opción'
+        except Exception as e:
+            data['error'] = str(e)
+        return JsonResponse(data)
     #    print(request.POST)
     #    form = CategoryForm(request.POST) #Le ponemos al formulario lo que esta llegando del post
     #    
@@ -82,4 +94,5 @@ class CategoryCreateView(CreateView):
         context['title'] = 'Creación de una categoria'
         context['entity'] = 'Categorias'
         context['list_url'] = reverse_lazy('erp:category_list')
+        context['action'] = 'add' #Defino la accion que voy a hacer en el post, para hacerlo mas dinamico
         return context
