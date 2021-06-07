@@ -1,11 +1,9 @@
-from django.http.response import JsonResponse
+from django.http.response import JsonResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect #Redirect me direcciona a la pagina dependido de la url que le mande
 from django.urls import reverse_lazy #con reverse_lazy tengo la ruta absoluta de esa url
 from django.utils.decorators import method_decorator
-#from django.utils.decorators import method_decorator
 #from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_protect, csrf_exempt
-from erp.models import Category, Product
 from django.views.generic import ListView, CreateView
 
 from erp.models import Category, Product
@@ -52,8 +50,11 @@ class CategoryListView(ListView):
         context = super().get_context_data(**kwargs) #Es un diccionario para poder agregarle mas variables
         #Puedo agregarle variables para devolver a mi plantilla
         context['title'] = 'Listado de Categorías'
+        context['create_url'] = reverse_lazy('erp:category_create') #PAra mandar la ruta absoluta
         #context['object_list'] = Product.objects.all #A.Vemos el producto relacionado con las categorias, Tgo el mismo resultado que en A
         #print(reverse_lazy('erp:category_list')) #Para ver la funcion reverse_lazy
+        context['list_url'] = reverse_lazy('erp:category_list')
+        context['entity'] = 'Categorias'
         return context
 
 class CategoryCreateView(CreateView):
@@ -62,7 +63,23 @@ class CategoryCreateView(CreateView):
     template_name = 'category/create.html' #Se le dice el template o donde va a estar
     success_url = reverse_lazy('erp:category_list')#Donde redirecciono la plantilla luego de guardar, 
 
+    #Ejemplo, metodo post para los errores
+    #def post(self, request, *args, **kwargs):
+    #    print(request.POST)
+    #    form = CategoryForm(request.POST) #Le ponemos al formulario lo que esta llegando del post
+    #    
+    #    if form.is_valid():
+    #        form.save()
+    #        return HttpResponseRedirect(self.success_url) #PAra redireccionar a una url
+    #    
+    #    self.object = None
+    #    context = self.get_context_data(**kwargs) #Este pedazo aca es para poder meterlo dentro de la caja
+    #    context['form'] = form
+    #    return render(request, self.template_name, context)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Creación de una categoria'
+        context['entity'] = 'Categorias'
+        context['list_url'] = reverse_lazy('erp:category_list')
         return context
