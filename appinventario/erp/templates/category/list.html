@@ -1,26 +1,25 @@
 {% extends "list.html" %}
+{% load static %}
+
+{% block head_list %}
+    <script src="{% static 'category/js/list.js' %}"></script>
+{% endblock head_list %}
 
 {% block columns %}
 <tr>
     <th scope="col" style="width: 10%;">Nro</th>
-    <th scope="col" style="width: 70%;">Nombre</th>
+    <th scope="col" style="width: 20%;">Nombre</th>
+    <th scope="col" style="width: 50%;">Descripción</th>
     <th scope="col" style="width: 20%;">Opciones</th>
 </tr>
 {% endblock columns %}
 
 {% block rows %}
-{% for category in object_list %}
-<tr>
-    <td>{{category.id}}</td>
-    <td>{{category.name}}</td>
-    <td>
-        <a href="{% url 'erp:category_update' category.id %}" class="btn btn-warning btn-xs btn-flat">
-            <i class="far fa-edit"></i>
-        </a>
-        <a href="{% url 'erp:category_delete' category.id %}" class="btn btn-danger btn-xs btn-flat">
-            <i class="fas fa-trash-alt"></i>
-        </a>
-    </td>
-</tr>
-{% endfor %}
+
 {% endblock rows %}
+
+<!-- Colco el bloque vacio para que no se ejecute ese ploque -->
+
+{% block javascript %}
+  
+{% endblock javascript %}

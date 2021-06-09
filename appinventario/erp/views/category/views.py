@@ -2,7 +2,7 @@ from django.http.response import JsonResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect #Redirect me direcciona a la pagina dependido de la url que le mande
 from django.urls import reverse_lazy #con reverse_lazy tengo la ruta absoluta de esa url
 from django.utils.decorators import method_decorator
-#from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_protect, csrf_exempt
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 
@@ -25,17 +25,25 @@ class CategoryListView(ListView):
     #Usamos un decorador para saber si un usario esta logeado, sino lo eta que se redireccione
     #@method_decorator(login_required)
     @method_decorator(csrf_exempt)
-    def dispatch(self, request, *arg, **kwargs):
-        return super().dispatch(request, *arg, **kwargs)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
 
     def post(self, request, *arg, **kwargs):
         #Cuando alguien haga una peticion de tipo post, me devuelva un objeto
         data = {}
         try:
-            data = Category.objects.get(id=request.POST['id']).toJSON()   
+            action = request.POST['action']
+            #Cuando hacemos varias acciones en el post es bueno manejar un identificador
+            if action == 'searchdata':
+                data = []
+                for i in Category.objects.all():
+                    data.append(i.toJSON()) #retorno como resultado una collecion diccionario con todos los elementos de mi tabla
+            else:
+                data['error'] = 'Ha ocurrido un error'
+            #data = Category.objects.get(id=request.POST['id']).toJSON()   
         except Exception as e:
             data['error'] = str(e)
-        return JsonResponse(data)
+        return JsonResponse(data, safe=False)
 
     #Podemos usar otros metodos, video 20, 
     #para obtener la consulta que queremos retornar a nuestra plantilla
@@ -103,9 +111,9 @@ class CategoryUpdateView(UpdateView):
     template_name = 'category/create.html'
     success_url = reverse_lazy('erp:category_list') 
 
-    def dispatch(self, request, *arg, **kwargs):
+    def dispatch(self, request, *args, **kwargs):
         self.object = self.get_object() #Importante seguir este parametro para la edicion, ya que ahi que asignarle el objeto sino django lo toma que un objeto nuevo que va a creaer
-        return super().dispatch(request, *arg, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def post(self, request, *arg, **kwargs):
         data = {}
@@ -129,9 +137,22 @@ class CategoryUpdateView(UpdateView):
         return context
 
 class CategoryDeleteView(DeleteView):
-    model =  Category
+    model = Category
     template_name = 'category/delete.html'
     success_url = reverse_lazy('erp:category_list') 
+
+    #@method_decorator(csrf_exempt)
+    def dispatch(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        return super().dispatch(request, *args, **kwargs)
+
+    def post(self, *args, **kwargs):
+        data = {}
+        try:
+            self.object.delete()
+        except Exception as e:
+            data['error'] = str(e)
+        return JsonResponse(data)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
