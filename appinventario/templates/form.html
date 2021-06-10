@@ -1,9 +1,9 @@
-{% extends "body.html" %}
+{% extends 'layout.html' %}
 {% load widget_tweaks %}
 {% block content %}
 <!-- Coloco todo el card dentr odel formulario -->
 <form action="." method="POST">
-    <div class="card card-default">
+    <div class="card card-primary">
         <div class="card-header">
             <h3 class="card-title">
                 {% if action == 'add' %}
