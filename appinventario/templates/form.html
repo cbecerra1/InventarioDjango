@@ -36,7 +36,7 @@
             {% for field in form.visible_fields %}
             <div class="form-group">
                 <label for="email">{{ field.label }}</label>
-                {{ field|add_class:'form-control'|attr:'autocomplete=off' }}
+                {{ field|add_class:'form-control'|attr:'autocomplete:off' }}
             </div>
             {% endfor %}
         </div>
@@ -68,7 +68,7 @@
         $.ajax({
             url: window.location.pathname,
             type: 'POST',
-            data:  parameters,
+            data: parameters,
             dataType: 'json'
         }).done(function (data) {
             if(!data.hasOwnProperty('error')){

@@ -16,7 +16,7 @@
 {% endblock head %}
 
 {% block content %}
-<div class="card card-primary">
+<div class="card card-default">
     <div class="card-header">
         <h3 class="card-title">
             <i class="fas fa-search"></i>
@@ -64,7 +64,7 @@
                 data: { id: 1 },
                 dataType: 'json'
             }).done(function (data) {
-                console.log(data)
+                console.log(data);
             }).fail(function (jqXHR, textStatus, errorThrown) {
                 alert(textStatus + ': ' + errorThrown);
             }).always(function (data) {
