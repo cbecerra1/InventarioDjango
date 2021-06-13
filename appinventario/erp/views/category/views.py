@@ -3,6 +3,7 @@ from django.urls import reverse_lazy #con reverse_lazy tengo la ruta absoluta de
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+from django.views.generic.edit import FormView
 
 from erp.models import Category, Product
 from erp.forms import *
@@ -151,3 +152,27 @@ class CategoryDeleteView(DeleteView):
         context['entity'] = 'Categorias'
         context['list_url'] = reverse_lazy('erp:category_list')
         return context
+
+class CategoryFormView(FormView):
+    #Verifica que mi formulario sea valido
+    form_class = CategoryForm
+    template_name = 'category/create.html'
+    success_url = reverse_lazy('erp:category_list')
+
+    #Sobreescribimos dos metodos que son propios y se usan mucho en esta vista generica
+    def form_valid(self, form):#si se ejecuta de manera correcta
+        print(form.is_valid())
+        print(form)
+        return super().form_valid(form)
+    
+    def form_invalid(self, form):#Para ver el error
+        print(form.errors)
+        return super().form_invalid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'form | Categoria'
+        context['entity'] = 'Categorias'
+        context['list_url'] = reverse_lazy('erp:category_list')
+        context['action'] = 'add' #Defino la accion que voy a hacer en el post, para hacerlo mas dinamico
+        return context  

@@ -49,3 +49,14 @@ class CategoryForm(ModelForm):
         except Exception as e:
             data['error'] = str(e)
         return data
+
+    #Para hacer validaciones adicionales personalizadas
+    def clean(self):
+        #PAra ver los objetos del formulario
+        cleaned = super().clean()
+        #Aplicamos una validacion
+        if len(cleaned['name']) <= 50:
+            #Hay dos maneras
+            raise forms.ValidationError('Validacion xxx') #En esta solo me sale el error pero no me lo presenta, toca ponerle en el formularo una linea d e mas, ver documentacion django en form/api
+            #self.add_error('name','Le faltan caracteres') #Hago una validacion adicional
+        return cleaned
