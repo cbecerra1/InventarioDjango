@@ -16,13 +16,17 @@ Including another URLconf
 
 from django.urls import path
 from .views.category.views import *
+from .views.dashboard.views import *
 
 app_name = 'erp'
 
 urlpatterns = [
+    # Category
     path('category/list/', CategoryListView.as_view(), name='category_list'),
     path('category/add/', CategoryCreateView.as_view(), name='category_create'),
     path('category/edit/<int:pk>/', CategoryUpdateView.as_view(), name='category_update'),
     path('category/delete/<int:pk>/', CategoryDeleteView.as_view(), name='category_delete'),
     path('category/form/', CategoryFormView.as_view(), name='category_form'),
+    # Home
+    path('dashboard/', DashboardView.as_view(), name='dashboard'),
 ]

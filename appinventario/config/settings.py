@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     #Apps
     'erp',
     'homepage',
+    'login',
 ]
 
 MIDDLEWARE = [
@@ -136,4 +137,11 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+#Defino la ruta para cuando hago login
+LOGIN_REDIRECT_URL= '/erp/dashboard/'
 
+#Para definir la ruta cuando hago logout
+LOGOUT_REDIRECT_URL= '/login/'
+
+#DEclaro la variable para el deocrador
+LOGIN_URL = '/login/'

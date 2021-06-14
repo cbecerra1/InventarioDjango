@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.http.response import JsonResponse
 from django.urls import reverse_lazy #con reverse_lazy tengo la ruta absoluta de esa url
 from django.utils.decorators import method_decorator
@@ -17,6 +18,7 @@ class CategoryListView(ListView):
     #Usamos un decorador para saber si un usario esta logeado, sino lo eta que se redireccione
     #@method_decorator(login_required)
     @method_decorator(csrf_exempt)
+    @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
 
@@ -63,6 +65,11 @@ class CategoryCreateView(CreateView):
     template_name = 'category/create.html' #Se le dice el template o donde va a estar
     success_url = reverse_lazy('erp:category_list')#Donde redirecciono la plantilla luego de guardar, 
 
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        return super().dispatch(request, *args, **kwargs)
+
     #Ejemplo, metodo post para los errores
     def post(self, request, *arg, **kwargs):
         data = {}
@@ -103,6 +110,7 @@ class CategoryUpdateView(UpdateView):
     template_name = 'category/create.html'
     success_url = reverse_lazy('erp:category_list') 
 
+    @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
         self.object = self.get_object() #Importante seguir este parametro para la edicion, ya que ahi que asignarle el objeto sino django lo toma que un objeto nuevo que va a creaer
         return super().dispatch(request, *args, **kwargs)
@@ -134,6 +142,7 @@ class CategoryDeleteView(DeleteView):
     success_url = reverse_lazy('erp:category_list') 
 
     #@method_decorator(csrf_exempt)
+    @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
         self.object = self.get_object()
         return super().dispatch(request, *args, **kwargs)
