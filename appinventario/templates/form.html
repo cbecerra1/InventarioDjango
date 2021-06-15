@@ -9,13 +9,12 @@
                 {% if action == 'add' %}
                   <i class="fas fa-plus"></i>
                 {% else  %}
-                <i class="fas fa-edit"></i>
+                    <i class="fas fa-edit"></i>
                 {% endif %}
                 
                 {{title}}
             </h3>
         </div>
-
         <div class="card-body">
             {% csrf_token %}
             <input type="hidden" name="action" value="{{ action }}">
@@ -25,14 +24,13 @@
                 <h5><i class="icon fas fa-ban"></i> Error al intentar guardar el registro!</h5>
                 <ul>
                     {% for field in form %}
-                    {% for error in field.errors %}
-                    <li> {{ error }}</li>
-                    {% endfor %}
+                        {% for error in field.errors %}
+                            <li> {{ error }}</li>
+                        {% endfor %}
                     {% endfor %}
                 </ul>
             </div>
             {% endif %}
-
             {% for field in form.visible_fields %}
             <div class="form-group">
                 <label for="email">{{ field.label }}</label>
@@ -44,6 +42,9 @@
             <button type="submit" class="btn btn-primary btn-flat">
                 <i class="fas fa-save"></i> Guardar registro
             </button>
+            <a href="{{ list_url }}" class="btn btn-danger btn-flat">
+                <i class="fas fa-times"></i> Cancelar
+            </a>
         </div>
     </div>
 </form>
@@ -52,7 +53,7 @@
         var errors = '';
         {% for field in form %}
             {% for error in field.errors %}
-            errors += '{{ error }}\n';
+                errors += '{{ error }}\n';
             {% endfor %}
         {% endfor %}
         {% for error in form.non_field_errors %}
@@ -65,25 +66,12 @@
         });
     {% endif %}
 
-    /*$('form').on('submit', function (e) {
-        e.preventDefault();
-        var parameters = $(this).serializeArray();
-        $.ajax({
-            url: window.location.pathname,
-            type: 'POST',
-            data: parameters,
-            dataType: 'json'
-        }).done(function (data) {
-            if(!data.hasOwnProperty('error')){
+    $('form').on('submit', function (e) {
+            e.preventDefault();
+            var parameters = $(this).serializeArray();
+            submit_with_ajax(window.location.pathname, 'Notificación', '¿Estas seguro de realizar la siguiente acción?', parameters, function () {
                 location.href = '{{ list_url }}';
-                return false;
-            }
-            message_error(data.error);
-        }).fail(function (jqXHR, textStatus, errorThrown) {
-            alert(textStatus + ': ' + errorThrown);
-        }).always(function (data) {
-
+            });
         });
-    });*/
 </script>
 {% endblock content %}

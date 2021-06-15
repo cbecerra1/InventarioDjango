@@ -1,5 +1,3 @@
-from django.core import exceptions
-from django.core.exceptions import EmptyResultSet
 from django.forms import *
 from .models import Category
 
@@ -22,17 +20,17 @@ class CategoryForm(ModelForm):
             'name' : TextInput(
                 attrs ={
                     #'class':'form-control', #Ya lo hice arriba
-                    'placeholder':'Ingrese un nombre',
+                    'placeholder': 'Ingrese un nombre',
                     #'autocomplete':'off'
                 }
             ),
             'desc' : Textarea(
                 attrs ={
                     #'class':'form-control',
-                    'placeholder':'Ingrese una descripcón',
+                    'placeholder': 'Ingrese una descripcón',
                     #'autocomplete':'off',
-                    'rows':'3',
-                    'cols':'3'
+                    'rows': 3,
+                    'cols': 3
                 }
             )
         }
@@ -45,18 +43,18 @@ class CategoryForm(ModelForm):
             if form.is_valid():
                 form.save()
             else:
-                data['error']=form.errors
+                data['error'] = form.errors
         except Exception as e:
             data['error'] = str(e)
         return data
 
     #Para hacer validaciones adicionales personalizadas
-    def clean(self):
+    #def clean(self):
         #PAra ver los objetos del formulario
-        cleaned = super().clean()
+    #    cleaned = super().clean()
         #Aplicamos una validacion
-        if len(cleaned['name']) <= 50:
+    #    if len(cleaned['name']) <= 50:
             #Hay dos maneras
-            raise forms.ValidationError('Validacion xxx') #En esta solo me sale el error pero no me lo presenta, toca ponerle en el formularo una linea d e mas, ver documentacion django en form/api
+    #        raise forms.ValidationError('Validacion xxx') #En esta solo me sale el error pero no me lo presenta, toca ponerle en el formularo una linea d e mas, ver documentacion django en form/api
             #self.add_error('name','Le faltan caracteres') #Hago una validacion adicional
-        return cleaned
+    #    return cleaned
