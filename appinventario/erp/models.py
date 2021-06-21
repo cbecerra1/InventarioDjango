@@ -1,3 +1,4 @@
+from config.settings import STATIC_URL, MEDIA_URL
 from django.db import models
 from datetime import datetime
 from django.forms import model_to_dict
@@ -23,14 +24,21 @@ class Category(models.Model):
         verbose_name_plural = 'Categorias'
         ordering = ['id']
 
+#mirar el video 42 donde muestra sin el metodo ajax
 class Product(models.Model):
     name = models.CharField(max_length=150, verbose_name='Nombre', unique=True)
-    cate = models.ForeignKey(Category, on_delete=models.CASCADE)
-    image = models.ImageField(upload_to='product/%Y/%m/%d', null=True, blank=True)
-    pvp = models.DecimalField(default=0.00, max_digits=9, decimal_places=2)
+    cate = models.ForeignKey(Category, on_delete=models.CASCADE, verbose_name='Categoria')
+    image = models.ImageField(upload_to='product/%Y/%m/%d', verbose_name='Imagen', null=True, blank=True)
+    pvp = models.DecimalField(default=0.00, max_digits=9, decimal_places=2, verbose_name='Precio de venta')
 
     def __str__(self):
         return self.name
+
+    #Metodo para que sea mas eficiente
+    def get_image(self):
+        if self.image: #En caso de que la imagen tenga datos
+            return '{}{}'.format(MEDIA_URL, self.image) #Me retorna la ruta con la imagen
+        return '{}{}'.format(STATIC_URL, 'img/empty.png') #Sino retorna una imagen por defecto
 
     class Meta:
         verbose_name = 'Producto'
@@ -67,7 +75,6 @@ class Sale(models.Model):
         verbose_name = 'Venta'
         verbose_name_plural = 'Ventas'
         ordering = ['id']
-
 
 class DetSale(models.Model):
     sale = models.ForeignKey(Sale, on_delete=models.CASCADE)

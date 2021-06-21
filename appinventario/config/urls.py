@@ -19,9 +19,16 @@ from django.urls import path, include
 from homepage.views import IndexView #Llamamos mi vista generica
 from login.views import *
 
+#Para los archivos multimedia
+from django.conf import settings
+from django.conf.urls.static import static
+
 urlpatterns = [
     path('', IndexView.as_view(), name='index'),
     path('login/', include('login.urls')),
     path('admin/', admin.site.urls),
     path('erp/', include('erp.urls')),
 ]
+
+#Para que coja la url de la imagen
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
