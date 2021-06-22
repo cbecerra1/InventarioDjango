@@ -86,3 +86,17 @@ class ProductForm(ModelForm):
         except Exception as e:
              data['error'] = str(e)
         return data
+
+class TestForm(Form):
+    #Creo un formulario que no se basa en un modelo
+    #Puedo personalizar el componente y ponerle atirubtos
+    #Queryset tiene el listado de objetos que se va a presentar
+    categories = ModelChoiceField(queryset=Category.objects.all(), widget=Select(attrs={
+        'class': 'form-control'
+    }))
+
+    #Se pone none porque product debe de star vacio
+    products = ModelChoiceField(queryset=Product.objects.none(), widget=Select(attrs={
+        'class': 'form-control'
+    }))
+ 

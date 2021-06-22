@@ -18,6 +18,7 @@ from django.urls import path
 from .views.category.views import *
 from .views.dashboard.views import *
 from .views.product.views import *
+from .views.tests.views import TestView
 
 app_name = 'erp'
 
@@ -35,5 +36,7 @@ urlpatterns = [
     path('product/delete/<int:pk>/', ProductDeleteView.as_view(), name='product_delete'),
     # Home
     path('dashboard/', DashboardView.as_view(), name='dashboard'),
+    #test
+    path('test/', TestView.as_view(), name='test'),
 ]
 
