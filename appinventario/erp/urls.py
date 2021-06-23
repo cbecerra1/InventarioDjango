@@ -18,7 +18,7 @@ from django.urls import path
 from .views.category.views import *
 from .views.dashboard.views import *
 from .views.product.views import *
-from .views.tests.views import TestView
+from .views.tests.views import *
 
 app_name = 'erp'
 
@@ -37,6 +37,7 @@ urlpatterns = [
     # Home
     path('dashboard/', DashboardView.as_view(), name='dashboard'),
     #test
-    path('test/', TestView.as_view(), name='test'),
+    #path('test/', TestView.as_view(), name='test'), #metodo 1
+    path('test/', TestView2.as_view(), name='test'), #metodo 2
 ]
 

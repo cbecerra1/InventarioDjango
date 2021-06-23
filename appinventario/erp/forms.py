@@ -99,4 +99,19 @@ class TestForm(Form):
     products = ModelChoiceField(queryset=Product.objects.none(), widget=Select(attrs={
         'class': 'form-control'
     }))
+
+class TestForm2(Form):
+    #Creo un formulario que no se basa en un modelo
+    #Puedo personalizar el componente y ponerle atirubtos
+    #Queryset tiene el listado de objetos que se va a presentar
+    categories = ModelChoiceField(queryset=Category.objects.all(), widget=Select(attrs={
+        'class': 'form-control select2',
+        'style': 'width:100%'
+    }))
+
+    #Se pone none porque product debe de star vacio
+    products = ModelChoiceField(queryset=Product.objects.none(), widget=Select(attrs={
+        'class': 'form-control select2',
+        'style': 'width:100%'
+    }))
  
