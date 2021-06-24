@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'erp',
     'homepage',
     'login',
+    'user',
 ]
 
 MIDDLEWARE = [
@@ -151,3 +152,6 @@ LOGIN_URL = '/login/'
 MEDIA_URL = '/media/'
 # Path where media is stored
 MEDIA_ROOT = BASE_DIR / 'media'
+
+#Cuando personalizo mi usuario
+AUTH_USER_MODEL = 'user.User'
