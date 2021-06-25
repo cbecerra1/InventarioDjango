@@ -34,6 +34,9 @@ class CategoryForm(ModelForm):
                 }
             )
         }
+
+        #Para que no me aparezcan los campos en la creacion de la categoria
+        exclude = ['user_update', 'user_creation']
     
     #Metodo para guardar los datos
     def save(self, commit= True):

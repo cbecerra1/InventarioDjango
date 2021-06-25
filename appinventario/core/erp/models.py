@@ -1,3 +1,4 @@
+from crum import get_current_user
 from django.db import models
 from datetime import datetime
 
@@ -5,18 +6,30 @@ from django.forms import model_to_dict
 
 from config.settings import STATIC_URL, MEDIA_URL
 from core.erp.choices import gender_choices
-
-
-
+from core.models import BaseModel
 
 # Create your models here.
 
-class Category(models.Model):
+class Category(BaseModel):
     name = models.CharField(max_length=150, verbose_name='Nombre', unique=True)
     desc = models.CharField(max_length=500, null=True, blank=True, verbose_name='Descripción')
 
     def __str__(self):
         return self.name
+
+    #usando la libreria django-crum sobreescribo mi metodo de guardado
+    def save(self, force_insert=False, force_update=False, using=None,
+                update_fields=None):
+        #Aqui digo que va a pasr cuando hago un guardado
+        #Obtengo el usuario que tengo en el momento y lo guardo
+        user = get_current_user()
+        #Validamos que el usuario exista
+        if user is not None:
+            if not self.pk:
+                self.user_creation = user #Si el usuario no existe lo crea
+            else:
+                self.user_update = user
+        super(Category, self).save()
 
     #El sighiente metodo me devuelve un diccionario con todos los atributos que tiene mi entidad
     def toJSON(self):
