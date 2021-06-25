@@ -16,8 +16,8 @@ Including another URLconf
 from os import name
 from django.contrib import admin
 from django.urls import path, include
-from homepage.views import IndexView #Llamamos mi vista generica
-from login.views import *
+from core.homepage.views import IndexView #Llamamos mi vista generica
+from core.login.views import *
 
 #Para los archivos multimedia
 from django.conf import settings
@@ -25,9 +25,9 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('', IndexView.as_view(), name='index'),
-    path('login/', include('login.urls')),
+    path('login/', include('core.login.urls')),
     path('admin/', admin.site.urls),
-    path('erp/', include('erp.urls')),
+    path('erp/', include('core.erp.urls')),
 ]
 
 #Para que coja la url de la imagen
