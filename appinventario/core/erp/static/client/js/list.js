@@ -20,7 +20,7 @@ function getData(){
             {"data": "surnames"},
             {"data": "dni"},
             {"data": "date_birthday"},
-            {"data": "gender"},
+            {"data": "gender.name"},
             {"data": "id"},
         ],
         columnDefs: [
@@ -29,7 +29,7 @@ function getData(){
                 class: 'text-center',
                 orderable: false,
                 render: function (data, type, row) {
-                    var buttons = '<a href="#" class="btn btn-warning btn-xs btn-flat"><i class="fas fa-edit"></i></a> ';
+                    var buttons = '<a href="#" rel="edit" class="btn btn-warning btn-xs btn-flat"><i class="fas fa-edit"></i></a> ';
                     buttons += '<a href="#" type="button" class="btn btn-danger btn-xs btn-flat"><i class="fas fa-trash-alt"></i></a>';
                     return buttons;
                 }
@@ -43,17 +43,40 @@ function getData(){
 
 $(function () {
 
+    modal_title = $('.modal-title');
     getData(); //Se debe de llamar al comienzo
     //Llamo al boton del nuevo registro
     $('.btnAdd').on('click', function () {
         $('input[name="action"]').val('add');
-        //$('form')[0].reset();//Para que se refresque la informacion, opcion 1
+        modal_title.find('span').html('Creación de un cliente'); //Busca los componentes span y con html pongio el exto
+        console.log(modal_title.find('i'));
+        modal_title.find('i').removeClass().addClass('fas fa-plus');//Busca la etiqueta i, remuevo las clases y le pongo la clase fas fa-plus
+        $('form')[0].reset();//Para que se refresque la informacion, opcion 1
         $('#myModalClient').modal('show'); //Inicializo mi componente modal, lo visualizamos
+    });
+
+    //Para editar un elemento
+    $('#data tbody').on('click', 'a[rel="edit"]', function (){
+        modal_title.find('span').html('Edición de un cliente'); 
+        modal_title.find('i').removeClass().addClass('fas fa-edit');
+        var tr = tblClient.cell($(this).closest('td, li')).index();
+        var data = tblClient.row(tr.row).data();//Cuando haga click en una elemento de la tabla, especificmanete en el componente a y el vinculo edit va a pa sar algo
+        //TEniendo los datos los transpaso a mis componentes
+        $('input[name="action"]').val('edit');
+        $('input[name="id"]').val(data.id);
+        $('input[name="names"]').val(data.names);
+        $('input[name="surnames"]').val(data.surnames);
+        $('input[name="dni"]').val(data.dni);
+        $('input[name="date_birthday"]').val(data.date_birthday);
+        $('input[name="address"]').val(data.address);
+        $('select[name="gender"]').val(data.gender.id);
+        //Ya pase los componenest habro mi model
+        $('#myModalClient').modal('show');
     });
 
     //Para ocultarse el modeal y decir que va a pasar
     $('#myModalClient').on('shown.bs.modal', function () {
-        $('form')[0].reset();//Opcion2
+        //$('form')[0].reset();//Opcion2
     });
 
     //Para enviar los datos del formulario
@@ -69,4 +92,3 @@ $(function () {
         });
     });
 });
-

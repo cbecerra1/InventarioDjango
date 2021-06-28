@@ -75,7 +75,8 @@ class Client(models.Model):
     
     def toJSON(self):
         item = model_to_dict(self)
-        item['gender'] = self.get_gender_display() #REtono el valor del display del mi choice
+        #item['gender'] = self.get_gender_display() #REtono el valor del display del mi choice
+        item['gender'] = {'id':self.gender, 'name':self.get_gender_display()}
         item['date_birthday'] = self.date_birthday.strftime('%Y-%m-%d') #Conbierto a un formato el valor de la fecha
         return item
 
