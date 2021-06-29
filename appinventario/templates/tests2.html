@@ -2,6 +2,10 @@
 {% load widget_tweaks %}
 {% load static %}
 {% block head %}
+<link href="{% static 'lib/jquery-ui-1.12.1/jquery-ui.min.css' %}" rel="stylesheet" />
+<script src="{% static 'lib/jquery-ui-1.12.1/jquery-ui.min.js' %}"></script>
+
+
 <link href="{% static 'lib/select2-4.0.13/css/select2.min.css' %}" rel="stylesheet" />
 <link href="{% static 'lib/select2-4.0.13/css/select2-bootstrap4.min.css' %}" rel="stylesheet" />
 <script src="{% static 'lib/select2-4.0.13/js/select2.min.js' %}"></script>
@@ -25,8 +29,13 @@
                 <label>Productos:</label>
                 {{ form.products }}
             </div>
+            <!-- Autocompletado -->
+            <div class="form-group">
+                <label>Buscador</label>
+                {{ form.search }}
+            </div>
+            <!-- /Autocompletado -->
         </div>
-
     </div>
 </form>
 <script>
@@ -74,10 +83,62 @@
                 //select_products.html(options) //Para incrustar estas opciones
             });
         });
-    
+
         select_products.on('change', function () {
-           var value = select_products.select2('data')[0];
-           console.log(value); 
+            var value = select_products.select2('data')[0];
+            console.log(value);
+        });
+
+        //Codigo para el autocompletado
+        var availableTags = [
+            "ActionScript",
+            "AppleScript",
+            "Asp",
+            "BASIC",
+            "C",
+            "C++",
+            "Clojure",
+            "COBOL",
+            "ColdFusion",
+            "Erlang",
+            "Fortran",
+            "Groovy",
+            "Haskell",
+            "Java",
+            "JavaScript",
+            "Lisp",
+            "Perl",
+            "PHP",
+            "Python",
+            "Ruby",
+            "Scala",
+            "Scheme"
+        ];
+        $('input[name="search"]').autocomplete({
+            //en source usare una funcion para que por medio de ajax se conecte a mis modelos y mis bases de datos
+            source: function (request, response) {
+                //Hacemos los que es ajax
+                $.ajax({
+                    url: window.location.pathname,
+                    type: 'POST',
+                    data: {
+                        'action': 'autocomplete',
+                        'term': request.term //Para obtener lo que voy escribiendo
+                    }, //Coloc los parametros para que se conecte a mi vista
+                    dataType: 'json',
+                }).done(function (data) {
+                    response(data);
+                }).fail(function (jqXHR, textStatus, errorThrown) {
+                    //alert(textStatus + ': ' + errorThrown);
+                }).always(function (data) {
+
+                });
+            },
+            delay: 500,
+            minLength: 2,
+            select: function (event, ui) {
+                console.log(ui.item);
+            }
         });
     });
 </script>

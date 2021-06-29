@@ -33,7 +33,7 @@ class Category(BaseModel):
 
     #El sighiente metodo me devuelve un diccionario con todos los atributos que tiene mi entidad
     def toJSON(self):
-        item = model_to_dict(self) #Self contiene la entidad en si, entonces me pasa todo a diccionario
+        item = model_to_dict(self, exclude=['user_creation','user_update']) #Self contiene la entidad en si, entonces me pasa todo a diccionario
         return item
 
     class Meta:

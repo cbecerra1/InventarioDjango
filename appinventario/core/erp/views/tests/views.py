@@ -5,7 +5,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
 
 from core.erp.forms import TestForm, TestForm2
-from core.erp.models import Product
+from core.erp.models import Product, Category
 
 #Para selects anidados
 #Metodo 1
@@ -57,6 +57,15 @@ class TestView2(TemplateView):
                 data = [{'id': '', 'text':'----------------------'}] #Como la data no tiene un  valor vacio ahi que inicializarla al comienzo
                 for i in Product.objects.filter(cat_id=request.POST['id']):
                     data.append({'id': i.id, 'text': i.name, 'data':i.cat.toJSON()}) #PAra teruel eliminar la llave data porque no se necesitaria es ma un ejemplo
+            #PAra el autocomplete
+            elif action == 'autocomplete':
+                data = []
+                #Hago una busqueda de las categorias por el nombre lo que contiene la varialbe
+                #No es recomendable que made toda la date, por eso pongo de 0 a 10 registros
+                for i in Category.objects.filter(name__icontains=request.POST['term'])[0:10]:
+                    item = i.toJSON()
+                    item['value'] = i.name #Le agrego otro dato al diccionario llamado value que contenga el nombre de la categoria
+                    data.append(item)
             else:
                 data['error'] = 'Ha ocurrido un error'
         except Exception as e:
