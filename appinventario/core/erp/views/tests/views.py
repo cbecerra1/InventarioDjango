@@ -64,7 +64,8 @@ class TestView2(TemplateView):
                 #No es recomendable que made toda la date, por eso pongo de 0 a 10 registros
                 for i in Category.objects.filter(name__icontains=request.POST['term'])[0:10]:
                     item = i.toJSON()
-                    item['value'] = i.name #Le agrego otro dato al diccionario llamado value que contenga el nombre de la categoria
+                    #item['value'] = i.name #Le agrego otro dato al diccionario llamado value que contenga el nombre de la categoria
+                    item['text'] = i.name #Este lo uso para poder trabajar con select2
                     data.append(item)
             else:
                 data['error'] = 'Ha ocurrido un error'
