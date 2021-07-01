@@ -1,4 +1,6 @@
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import redirect
 from django.http import JsonResponse
 from django.urls import reverse_lazy #con reverse_lazy tengo la ruta absoluta de esa url
 from django.utils.decorators import method_decorator
@@ -7,18 +9,22 @@ from django.views.generic import ListView, CreateView, UpdateView, DeleteView, F
 
 from core.erp.models import Category
 from core.erp.forms import CategoryForm
+from core.erp.mixins import IsSuperuserMixin, ValidatePermissionRequiredMixin
 
-class CategoryListView(ListView):
+#LoginRequiredMixin valida si un usuario esta logeado
+class CategoryListView(LoginRequiredMixin, ValidatePermissionRequiredMixin, ListView):
+    #Decimos cual sera el permiso que vamos a tener
+    permission_required = ('erp.change_category', 'erp.delete_category')
     model = Category
     template_name = 'category/list.html'
 
     #metodo dispatch, me redirecciona al metodo GET
     #Usamos un decorador para saber si un usario esta logeado, sino lo eta que se redireccione
-    #@method_decorator(login_required)
     @method_decorator(csrf_exempt)
-    @method_decorator(login_required)
+    #@method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
+        
 
     def post(self, request, *arg, **kwargs):
         #Cuando alguien haga una peticion de tipo post, me devuelva un objeto
@@ -57,7 +63,9 @@ class CategoryListView(ListView):
         context['entity'] = 'Categorias'
         return context
 
-class CategoryCreateView(CreateView):
+class CategoryCreateView(ValidatePermissionRequiredMixin, CreateView):
+    permission_required = 'erp.view_category'
+    url_redirect = reverse_lazy('erp:category_list')
     model =  Category
     form_class = CategoryForm #Se le debe decir el formulario a trabajar
     template_name = 'category/create.html' #Se le dice el template o donde va a estar
