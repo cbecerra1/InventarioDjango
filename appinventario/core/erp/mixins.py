@@ -1,4 +1,3 @@
-from typing import Sequence
 from django.shortcuts import redirect
 from datetime import datetime
 from django.contrib import messages

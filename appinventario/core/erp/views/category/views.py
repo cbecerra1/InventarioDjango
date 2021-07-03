@@ -1,22 +1,20 @@
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import redirect
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
 from django.urls import reverse_lazy #con reverse_lazy tengo la ruta absoluta de esa url
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView, FormView
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 
 from core.erp.models import Category
 from core.erp.forms import CategoryForm
-from core.erp.mixins import IsSuperuserMixin, ValidatePermissionRequiredMixin
+from core.erp.mixins import ValidatePermissionRequiredMixin
 
 #LoginRequiredMixin valida si un usuario esta logeado
 class CategoryListView(LoginRequiredMixin, ValidatePermissionRequiredMixin, ListView):
-    #Decimos cual sera el permiso que vamos a tener
-    permission_required = ('erp.change_category', 'erp.delete_category')
     model = Category
     template_name = 'category/list.html'
+    #Decimos cual sera el permiso que vamos a tener
+    permission_required = 'erp.view_category'
 
     #metodo dispatch, me redirecciona al metodo GET
     #Usamos un decorador para saber si un usario esta logeado, sino lo eta que se redireccione
@@ -25,7 +23,6 @@ class CategoryListView(LoginRequiredMixin, ValidatePermissionRequiredMixin, List
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
         
-
     def post(self, request, *arg, **kwargs):
         #Cuando alguien haga una peticion de tipo post, me devuelva un objeto
         data = {}
@@ -63,15 +60,14 @@ class CategoryListView(LoginRequiredMixin, ValidatePermissionRequiredMixin, List
         context['entity'] = 'Categorias'
         return context
 
-class CategoryCreateView(ValidatePermissionRequiredMixin, CreateView):
-    permission_required = 'erp.view_category'
-    url_redirect = reverse_lazy('erp:category_list')
+class CategoryCreateView(LoginRequiredMixin, ValidatePermissionRequiredMixin, CreateView):
     model =  Category
     form_class = CategoryForm #Se le debe decir el formulario a trabajar
     template_name = 'category/create.html' #Se le dice el template o donde va a estar
     success_url = reverse_lazy('erp:category_list')#Donde redirecciono la plantilla luego de guardar, 
+    permission_required = 'erp.view_category'
+    url_redirect = success_url
 
-    @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
 
@@ -105,17 +101,18 @@ class CategoryCreateView(ValidatePermissionRequiredMixin, CreateView):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Creación de una categoria'
         context['entity'] = 'Categorias'
-        context['list_url'] = reverse_lazy('erp:category_list')
+        context['list_url'] = self.success_url
         context['action'] = 'add' #Defino la accion que voy a hacer en el post, para hacerlo mas dinamico
         return context
 
-class CategoryUpdateView(UpdateView):
+class CategoryUpdateView(LoginRequiredMixin, ValidatePermissionRequiredMixin, UpdateView):
     model = Category
     form_class = CategoryForm 
     template_name = 'category/create.html'
-    success_url = reverse_lazy('erp:category_list') 
+    success_url = reverse_lazy('erp:category_list')
+    permission_required = 'erp.change_category'
+    url_redirect = success_url
 
-    @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
         self.object = self.get_object() #Importante seguir este parametro para la edicion, ya que ahi que asignarle el objeto sino django lo toma que un objeto nuevo que va a creaer
         return super().dispatch(request, *args, **kwargs)
@@ -137,17 +134,17 @@ class CategoryUpdateView(UpdateView):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Edición de una categoria'
         context['entity'] = 'Categorias'
-        context['list_url'] = reverse_lazy('erp:category_list')
+        context['list_url'] = self.success_url
         context['action'] = 'edit' 
         return context
 
-class CategoryDeleteView(DeleteView):
+class CategoryDeleteView(LoginRequiredMixin, ValidatePermissionRequiredMixin, DeleteView):
     model = Category
     template_name = 'category/delete.html'
     success_url = reverse_lazy('erp:category_list') 
+    permission_required = 'erp.delete_category'
+    url_redirect = success_url
 
-    #@method_decorator(csrf_exempt)
-    @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
         self.object = self.get_object()
         return super().dispatch(request, *args, **kwargs)
@@ -164,30 +161,5 @@ class CategoryDeleteView(DeleteView):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Eliminación de una categoria'
         context['entity'] = 'Categorias'
-        context['list_url'] = reverse_lazy('erp:category_list')
+        context['list_url'] = self.success_url
         return context
-
-class CategoryFormView(FormView):
-    #Verifica que mi formulario sea valido
-    form_class = CategoryForm
-    template_name = 'category/create.html'
-    success_url = reverse_lazy('erp:category_list')
-
-    #Sobreescribimos dos metodos que son propios y se usan mucho en esta vista generica
-    def form_valid(self, form):#si se ejecuta de manera correcta
-        print(form.is_valid())
-        print(form)
-        return super().form_valid(form)
-    
-    def form_invalid(self, form):#Para ver el error
-        print(form.is_valid())
-        print(form.errors)
-        return super().form_invalid(form)
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['title'] = 'form | Categoria'
-        context['entity'] = 'Categorias'
-        context['list_url'] = reverse_lazy('erp:category_list')
-        context['action'] = 'add' #Defino la accion que voy a hacer en el post, para hacerlo mas dinamico
-        return context  

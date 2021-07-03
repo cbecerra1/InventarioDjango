@@ -10,8 +10,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <link rel="icon" href="{% static 'img/empty.png' %}" type="image/png"/>
     <title> {{title}} </title>
-
     <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -30,17 +30,19 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <!-- Jquery Confirm -->
     <link rel="stylesheet" href="{% static 'lib/jquery-confirm-v3.3.4/jquery-confirm.min.css' %}">
     <script src="{% static 'lib/jquery-confirm-v3.3.4/jquery-confirm.min.js' %}"></script>
+    <!-- My css -->
+    <link rel="stylesheet" href="{% static 'css/mystyle.css' %}">  
     <!-- Mis funciones -->
     <script src="{% static 'js/function.js' %}"></script>
     <!-- Block Head -->
     {% block head %}
       
-    {% endblock head %}
+    {% endblock %}
 
 </head>
 
 {% block body %}
   
-{% endblock body %}
+{% endblock %}
 
 </html>

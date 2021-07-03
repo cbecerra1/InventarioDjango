@@ -1,4 +1,3 @@
-from crum import get_current_user
 from django.db import models
 from datetime import datetime
 
@@ -17,23 +16,9 @@ class Category(BaseModel):
     def __str__(self):
         return self.name
 
-    #usando la libreria django-crum sobreescribo mi metodo de guardado
-    def save(self, force_insert=False, force_update=False, using=None,
-                update_fields=None):
-        #Aqui digo que va a pasr cuando hago un guardado
-        #Obtengo el usuario que tengo en el momento y lo guardo
-        user = get_current_user()
-        #Validamos que el usuario exista
-        if user is not None:
-            if not self.pk:
-                self.user_creation = user #Si el usuario no existe lo crea
-            else:
-                self.user_update = user
-        super(Category, self).save()
-
     #El sighiente metodo me devuelve un diccionario con todos los atributos que tiene mi entidad
     def toJSON(self):
-        item = model_to_dict(self, exclude=['user_creation','user_update']) #Self contiene la entidad en si, entonces me pasa todo a diccionario
+        item = model_to_dict(self) #Self contiene la entidad en si, entonces me pasa todo a diccionario
         return item
 
     class Meta:
@@ -50,6 +35,13 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+
+    def toJSON(self):
+        item = model_to_dict(self)
+        item['cat'] = self.cat.toJSON()
+        item['image'] = self.get_image()
+        item['pvp'] = format(self.pvp, '.2f') #Para que me que con dos decimales
+        return item
 
     #Metodo para que sea mas eficiente
     def get_image(self):

@@ -2,15 +2,14 @@
 {% load widget_tweaks %}
 {% block content %}
 <!-- Coloco todo el card dentr odel formulario -->
-<form action="." method="POST">
-    <div class="card card-default">
+<form method="post" action=".">
+    <div class="card card-primary">
         <div class="card-header">
             <h3 class="card-title">
                 <i class="fas fa-trash"></i>
                 {{title}}
             </h3>
         </div>
-
         <div class="card-body">
             {% csrf_token %}
             <input type="hidden" name="action" value="{{ action }}">
@@ -20,9 +19,9 @@
                 <h5><i class="icon fas fa-ban"></i> Error al intentar guardar el registro!</h5>
                 <ul>
                     {% for field in form %}
-                    {% for error in field.errors %}
-                    <li> {{ error }}</li>
-                    {% endfor %}
+                        {% for error in field.errors %}
+                            <li> {{ error }}</li>
+                        {% endfor %}
                     {% endfor %}
                 </ul>
             </div>
@@ -43,27 +42,13 @@
         </div>
     </div>
 </form>
-
 <script>
     $('form').on('submit', function (e) {
         e.preventDefault();
         var parameters = new FormData(this);
-        $.ajax({
-            url: window.location.pathname,
-            type: 'POST',
-            data:  parameters,
-            dataType: 'json'
-        }).done(function (data) {
-            if(!data.hasOwnProperty('error')){
+        submit_with_ajax(window.location.pathname, 'Notificación', '¿Estas seguro de eliminar el siguiente registro?', parameters, function () {
                 location.href = '{{ list_url }}';
-                return false;
-            }
-            message_error(data.error);
-        }).fail(function (jqXHR, textStatus, errorThrown) {
-            alert(textStatus + ': ' + errorThrown);
-        }).always(function (data) {
-
         });
     });
 </script>
-{% endblock content %}
+{% endblock %}

@@ -11,163 +11,163 @@
     <script src="{% static 'lib/select2-4.0.13/js/i18n/es.js' %}"></script>
 {% endblock head %}
 {% block content %}
-<form method="post" action="." enctype="multipart/form-data">
-    <div class="card card-primary">
-        <div class="card-header">
-            <h3 class="card-title">
-                <i class="fas fa-plus"></i>
-                {{ title }}
-            </h3>
+    <form method="post" action="." enctype="multipart/form-data">
+        <div class="card card-primary">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-plus"></i>
+                    {{ title }}
+                </h3>
+            </div>
+            <div class="card-body">
+                <div class="form-group">
+                    <label>Categorias:</label>
+                    {{ form.categories }}
+                </div>
+                <div class="form-group">
+                    <label>Productos:</label>
+                    {{ form.products }}
+                </div>
+                <!-- Autocompletado -->
+                <div class="form-group">
+                    <label>Buscador</label>
+                    {{ form.search }}
+                </div>
+                <!-- /Autocompletado -->
+            </div>
         </div>
-        <div class="card-body">
-            <div class="form-group">
-                <label>Categorias:</label>
-                {{ form.categories }}
-            </div>
-            <div class="form-group">
-                <label>Productos:</label>
-                {{ form.products }}
-            </div>
-            <!-- Autocompletado -->
-            <div class="form-group">
-                <label>Buscador</label>
-                {{ form.search }}
-            </div>
-            <!-- /Autocompletado -->
-        </div>
-    </div>
-</form>
-<script>
-    var select_products = $('select[name="products"]'); //Que sea visible para todo el proyecto
-    $(function () {
-    
-        $('.select2').select2({
-            theme: "bootstrap4",
-            language: 'es'
-        });//Le digo que todos los componentes con la clase select2 se inicializan de la sig manera
+    </form>
+    <script>
+        var select_products = $('select[name="products"]'); //Que sea visible para todo el proyecto
+        $(function () {
+        
+            $('.select2').select2({
+                theme: "bootstrap4",
+                language: 'es'
+            });//Le digo que todos los componentes con la clase select2 se inicializan de la sig manera
 
-        $('select[name="categories"]').on('change', function () {
-            var id = $(this).val();
-            var options = '<option value="">----------------------------</option>';//Creamos las opciones que va atener el select
-            //En caso de tener mas validaciones
-            if (id === '') {
-                select_products.html(options);
-                return false;
-            }
-            $.ajax({
-                url: window.location.pathname,
-                type: 'POST',
-                data: {
-                    'action': 'search_product_id',
-                    'id': id
-                },
-                dataType: 'json',
-            }).done(function (data) {
-                console.log(data);
-                if (!data.hasOwnProperty('error')) {
-                    select_products.html('').select2({
-                        theme: "bootstrap4",
-                        language: 'es',
-                        data: data
-                    });
-                    //Iteramos la coleccion de elementos
-                    /*$.each(data, function (key, value) {
-                        options+='<option value="'+value.id+'">'+value.name+'</option>';
-                    })*/
+            $('select[name="categories"]').on('change', function () {
+                var id = $(this).val();
+                var options = '<option value="">----------------------------</option>';//Creamos las opciones que va atener el select
+                //En caso de tener mas validaciones
+                if (id === '') {
+                    select_products.html(options);
                     return false;
                 }
-                message_error(data.error);
-            }).fail(function (jqXHR, textStatus, errorThrown) {
-                alert(textStatus + ': ' + errorThrown);
-            }).always(function (data) {
-                //select_products.html(options) //Para incrustar estas opciones
-            });
-        });
-
-        select_products.on('change', function () {
-            var value = select_products.select2('data')[0];
-            console.log(value);
-        });
-
-        //Codigo para el autocompletado
-        var availableTags = [
-            "ActionScript",
-            "AppleScript",
-            "Asp",
-            "BASIC",
-            "C",
-            "C++",
-            "Clojure",
-            "COBOL",
-            "ColdFusion",
-            "Erlang",
-            "Fortran",
-            "Groovy",
-            "Haskell",
-            "Java",
-            "JavaScript",
-            "Lisp",
-            "Perl",
-            "PHP",
-            "Python",
-            "Ruby",
-            "Scala",
-            "Scheme"
-        ];
-        $('input[name="search"]').autocomplete({
-            //en source usare una funcion para que por medio de ajax se conecte a mis modelos y mis bases de datos
-            source: function (request, response) {
-                //Hacemos los que es ajax
                 $.ajax({
                     url: window.location.pathname,
                     type: 'POST',
                     data: {
-                        'action': 'autocomplete',
-                        'term': request.term //Para obtener lo que voy escribiendo
-                    }, //Coloc los parametros para que se conecte a mi vista
+                        'action': 'search_product_id',
+                        'id': id
+                    },
                     dataType: 'json',
                 }).done(function (data) {
-                    response(data);
-                }).fail(function (jqXHR, textStatus, errorThrown) {
-                    //alert(textStatus + ': ' + errorThrown);
-                }).always(function (data) {
-
-                });
-            },
-            delay: 500,
-            minLength: 2,
-            select: function (event, ui) {
-                console.log(ui.item);
-            }
-        });
-
-        //Inicializamos el componente select2
-        $('select[name="search"]').select2({
-            theme: "bootstrap4",
-            language: 'es',
-            allowClear: true,
-            ajax: {
-                delay: 250,
-                type: 'POST', //Debo especificar que tipo de peticion hago
-                url: window.location.pathname,
-                data: function (params) {
-                    var queryParameters = {
-                        term: params.term,
-                        action: 'autocomplete'
+                    console.log(data);
+                    if (!data.hasOwnProperty('error')) {
+                        select_products.html('').select2({
+                            theme: "bootstrap4",
+                            language: 'es',
+                            data: data
+                        });
+                        //Iteramos la coleccion de elementos
+                        /*$.each(data, function (key, value) {
+                            options+='<option value="'+value.id+'">'+value.name+'</option>';
+                        })*/
+                        return false;
                     }
-                    return queryParameters;
+                    message_error(data.error);
+                }).fail(function (jqXHR, textStatus, errorThrown) {
+                    alert(textStatus + ': ' + errorThrown);
+                }).always(function (data) {
+                    //select_products.html(options) //Para incrustar estas opciones
+                });
+            });
 
+            select_products.on('change', function () {
+                var value = select_products.select2('data')[0];
+                console.log(value);
+            });
+
+            //Codigo para el autocompletado
+            var availableTags = [
+                "ActionScript",
+                "AppleScript",
+                "Asp",
+                "BASIC",
+                "C",
+                "C++",
+                "Clojure",
+                "COBOL",
+                "ColdFusion",
+                "Erlang",
+                "Fortran",
+                "Groovy",
+                "Haskell",
+                "Java",
+                "JavaScript",
+                "Lisp",
+                "Perl",
+                "PHP",
+                "Python",
+                "Ruby",
+                "Scala",
+                "Scheme"
+            ];
+            $('input[name="search"]').autocomplete({
+                //en source usare una funcion para que por medio de ajax se conecte a mis modelos y mis bases de datos
+                source: function (request, response) {
+                    //Hacemos los que es ajax
+                    $.ajax({
+                        url: window.location.pathname,
+                        type: 'POST',
+                        data: {
+                            'action': 'autocomplete',
+                            'term': request.term //Para obtener lo que voy escribiendo
+                        }, //Coloc los parametros para que se conecte a mi vista
+                        dataType: 'json',
+                    }).done(function (data) {
+                        response(data);
+                    }).fail(function (jqXHR, textStatus, errorThrown) {
+                        //alert(textStatus + ': ' + errorThrown);
+                    }).always(function (data) {
+
+                    });
                 },
-                //Cuando se procesa la petecion haciendo el autocomplete, parecido a la funcion done
-                processResults: function (data) {
-                    return {
-                        results: data
-                    };
+                delay: 500,
+                minLength: 2,
+                select: function (event, ui) {
+                    console.log(ui.item);
+                }
+            });
+
+            //Inicializamos el componente select2
+            $('select[name="search"]').select2({
+                theme: "bootstrap4",
+                language: 'es',
+                allowClear: true,
+                ajax: {
+                    delay: 250,
+                    type: 'POST', //Debo especificar que tipo de peticion hago
+                    url: window.location.pathname,
+                    data: function (params) {
+                        var queryParameters = {
+                            term: params.term,
+                            action: 'autocomplete'
+                        }
+                        return queryParameters;
+
+                    },
+                    //Cuando se procesa la petecion haciendo el autocomplete, parecido a la funcion done
+                    processResults: function (data) {
+                        return {
+                            results: data
+                        };
+                    },
                 },
-            },
-            placeholder: 'Ingrese una descripción',
-            minimumInputLength: 1,
+                placeholder: 'Ingrese una descripción',
+                minimumInputLength: 1,
+            });
         });
-    });
-</script>
+    </script>
 {% endblock content %}

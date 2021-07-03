@@ -1,62 +1,62 @@
 {% extends 'layout.html' %}
 {% load widget_tweaks %}
 {% block content %}
-<form method="post" action="." enctype="multipart/form-data">
-    <div class="card card-primary">
-        <div class="card-header">
-            <h3 class="card-title">
-                <i class="fas fa-plus"></i>
-                {{ title }}
-            </h3>
-        </div>
-        <div class="card-body">
-            <div class="form-group">
-                <label>Categorias:</label>
-                {{ form.categories }}
+    <form method="post" action="." enctype="multipart/form-data">
+        <div class="card card-primary">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-plus"></i>
+                    {{ title }}
+                </h3>
             </div>
-            <div class="form-group">
-                <label>Productos:</label>
-                {{ form.products }}
+            <div class="card-body">
+                <div class="form-group">
+                    <label>Categorias:</label>
+                    {{ form.categories }}
+                </div>
+                <div class="form-group">
+                    <label>Productos:</label>
+                    {{ form.products }}
+                </div>
             </div>
-        </div>
 
-    </div>
-</form>
-<script>
-    $(function (params) {
-        $('select[name="categories"]').on('change', function () {
-            var id = $(this).val();
-            var select_products = $('select[name="products"]'); //Hacemos referencia al componente de mis prodcutos
-            var options = '<option value="">----------------------------</option>';//Creamos las opciones que va atener el select
-            //En caso de tener mas validaciones
-            if(id === ''){
-                select_products.html(options);
-                return false;
-            }
-            $.ajax({
-                url: window.location.pathname,
-                type: 'POST',
-                data: {
-                    'action':'search_product_id',
-                    'id': id
-                },
-                dataType: 'json',
-            }).done(function (data) {
-                console.log(data);
-                if (!data.hasOwnProperty('error')) {
-                    //Iteramos la coleccion de elementos
-                    $.each(data, function (key, value) {
-                        options+='<option value="'+value.id+'">'+value.name+'</option>';
-                    })
+        </div>
+    </form>
+    <script>
+        $(function (params) {
+            $('select[name="categories"]').on('change', function () {
+                var id = $(this).val();
+                var select_products = $('select[name="products"]'); //Hacemos referencia al componente de mis prodcutos
+                var options = '<option value="">----------------------------</option>';//Creamos las opciones que va atener el select
+                //En caso de tener mas validaciones
+                if(id === ''){
+                    select_products.html(options);
                     return false;
                 }
-                message_error(data.error);
-            }).fail(function (jqXHR, textStatus, errorThrown) {
-                alert(textStatus + ': ' + errorThrown);
-            }).always(function (data) {
-                select_products.html(options) //Para incrustar estas opciones
+                $.ajax({
+                    url: window.location.pathname,
+                    type: 'POST',
+                    data: {
+                        'action':'search_product_id',
+                        'id': id
+                    },
+                    dataType: 'json',
+                }).done(function (data) {
+                    console.log(data);
+                    if (!data.hasOwnProperty('error')) {
+                        //Iteramos la coleccion de elementos
+                        $.each(data, function (key, value) {
+                            options+='<option value="'+value.id+'">'+value.name+'</option>';
+                        })
+                        return false;
+                    }
+                    message_error(data.error);
+                }).fail(function (jqXHR, textStatus, errorThrown) {
+                    alert(textStatus + ': ' + errorThrown);
+                }).always(function (data) {
+                    select_products.html(options) //Para incrustar estas opciones
+                });
             });
         });
-    });
-</script>
-{% endblock content %}
+    </script>
+{% endblock %}

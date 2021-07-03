@@ -1,8 +1,13 @@
 {% extends 'layout.html' %}
 {% load widget_tweaks %}
+{% block head %}
+    {% block head_form %}
+
+    {% endblock %}
+{% endblock %}
 {% block content %}
 <!-- Coloco todo el card dentr odel formulario -->
-<form method="POST" action="." enctype="multipart/form-data">
+<form method="post" action="." enctype="multipart/form-data">
     <div class="card card-primary">
         <div class="card-header">
             <h3 class="card-title">
@@ -14,8 +19,7 @@
                 
                 {{title}}
             </h3>
-        </div>
-        
+        </div>        
         <div class="card-body">
             {% csrf_token %}
                 <input type="hidden" name="action" value="{{ action }}">
@@ -33,11 +37,10 @@
             </div>
             {% endif %}
             {% for field in form.visible_fields %}
-            <div class="form-group">
-                <p>Lugar del formulario</p>
-                <label for="email">{{ field.label }}</label>
-                {{ field|add_class:'form-control'|attr:'autocomplete:off' }}
-            </div>
+                <div class="form-group">
+                    <label for="email">{{ field.label }}</label>
+                    {{ field|add_class:'form-control'|attr:'autocomplete:off' }}
+                </div>
             {% endfor %}
         </div>
         <div class="card-footer">
@@ -84,4 +87,4 @@
             });
         });
 </script>
-{% endblock content %}
+{% endblock %}

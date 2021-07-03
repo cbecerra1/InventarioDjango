@@ -10,7 +10,7 @@
                 <div class="container">
                     <div class="row">
                         <div class="col-sm-6">
-                            <h1 class="m-0 text-dark"> Bienvenido <small>Example 3.0</small></h1>
+                            <h1 class="m-0 text-dark"> Bienvenido <small>{{ request.user.get_full_name }}</small></h1>
                         </div><!-- /.col -->
                         <div class="col-sm-6">
                             <ol class="breadcrumb float-sm-right">
@@ -28,7 +28,7 @@
                 <div class="container">
                     {% block content %}
 
-                    {% endblock content %}
+                    {% endblock %}
                 </div><!-- /.container-fluid -->
             </div>
             <!-- /.content -->
@@ -40,7 +40,7 @@
     <!-- Para cargar la tabla-Block Javascript -->
     {% block javascript %}
       
-    {% endblock javascript %}
+    {% endblock %}
     <script>
         {% if messages %}
             var html = '<p>';
@@ -56,4 +56,4 @@
         {% endif %}
     </script>
 </body>
-{% endblock body %}
+{% endblock %}
