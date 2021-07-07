@@ -1,6 +1,6 @@
 from datetime import datetime
 from django.forms import *
-from core.erp.models import Category, Product, Client
+from core.erp.models import Category, Product, Client, Sale
 
 class CategoryForm(ModelForm):
     def __init__(self, *args, **kwargs):
@@ -193,3 +193,47 @@ class TestForm2(Form):
         'class': 'form-control select2',
         'style': 'width:100%'
     }))
+
+class SaleForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        #Como heredo el template base y no uso la renderizacion dinamica debo de poner aca la clase de bootstrap de diseño:
+
+    class Meta:
+        model = Sale
+        fields = '__all__'
+        widgets = {
+            'cli': Select(
+                attrs={
+                    'autofocus': True,
+                    'class': 'form-control select2',
+                    'style': 'width:100%'
+                }
+            ),
+            'date_joined': DateInput(format='%Y-%m-%d',
+                attrs={
+                    'value': datetime.now().strftime('%Y-%m-%d'),
+                    'autocomplete': 'off',
+                    'class': 'form-control datetimepicker-input',
+                    #Creo el componente id, porque es el que ssiempre se crea al hacer una  fecha, creo el id con el nombre que deseo, en este caso date_joined
+                    'id': 'date_joined',
+                    'data-target': '#date_joined',
+                    'data-toggle': 'datetimepicker',
+                }
+            ),
+            'subtotal': TextInput(
+                attrs={
+                    'readonly': True,
+                    'class': 'form-control', #La clase de bootstrap
+            }),
+            'iva': TextInput(
+                attrs={
+                    'class': 'form-control',
+            }), #CAmbio el iva a texto para que no me aparezca la etiquetita
+            'total': TextInput(
+                attrs={
+                    'readonly': True,
+                    'class': 'form-control',
+            }),
+        }
+        #exclude = ['user_updated', 'user_creation']

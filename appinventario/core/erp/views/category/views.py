@@ -65,7 +65,7 @@ class CategoryCreateView(LoginRequiredMixin, ValidatePermissionRequiredMixin, Cr
     form_class = CategoryForm #Se le debe decir el formulario a trabajar
     template_name = 'category/create.html' #Se le dice el template o donde va a estar
     success_url = reverse_lazy('erp:category_list')#Donde redirecciono la plantilla luego de guardar, 
-    permission_required = 'erp.view_category'
+    permission_required = 'erp.add_category'
     url_redirect = success_url
 
     def dispatch(self, request, *args, **kwargs):
