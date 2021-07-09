@@ -12,12 +12,36 @@ var vents = {
         products: []
     },
     // Le coloco funciones a la estructura
+    //Funcion para hacer los calculos matematicos
+    calculate_invoice: function () {
+        var subtotal = 0.00;// Variable para sumar y guardar la suma
+        var iva = $('input[name="iva"]').val(); //Para el iva calculado, contiene lo que tiene el input iva
+        //Recorremos lo que tiene mi variable, en este caso productos, con this hago referencia como si estuviera dentro de vents
+        //Me muevo con la posicion y lo que tiene mi diccionario
+        $.each(this.items.products, function (pos, dict) {
+           //El precio de venta es un string por lo que ahi que convertilor
+            dict.subtotal = dict.cant * parseFloat(dict.pvp);
+            subtotal += dict.subtotal;
+        })
+        this.items.subtotal = subtotal; // Lo pngo dentro de la variable de mi estructura
+        this.items.iva = this.items.subtotal * iva; //Calculamos el iva 
+        this.items.total = this.items.subtotal + this.items.iva;//Para calcular el total = lo que tiene subtotal + lo que tiene iva
+        
+        $('input[name="subtotal"]').val(this.items.subtotal.toFixed(2))//Lo pongo en el input correspondiente
+        $('input[name="ivacalc"]').val(this.items.iva.toFixed(2))//Lo presento en el pinput de iva
+        $('input[name="total"]').val(this.items.total.toFixed(2))//Lo presento en el inputo de total
+    },
+    //Funcion para añadir items a la tabla
     add: function (item) {
         this.items.products.push(item);//Agrego el producto, Como es un array uso la propiedad push para poner el producto
         this.list(); //Le digo que se liste
     },
     //DEspues de seleccionar el producto listo mi estructura usando datatable, creo un metodo llamado list
+    //Lista los items en el datatable
     list: function () {
+        //Coloco la funcion antes de que se presente el listado
+        this.calculate_invoice();
+
         $('#tblProducts').DataTable({
             responsive: true,
             autoWidth: false,
@@ -98,12 +122,15 @@ $(function () {
     $("input[name='iva']").TouchSpin({
         min: 0,
         max: 100,
-        step: 0.1,
+        step: 0.01,
         decimals: 2,
         boostat: 5,
         maxboostedstep: 10,
         postfix: '%'
-    });
+    }).on('change', function () {
+        vents.calculate_invoice();//De esta maanera calculamos cuando modificamos el iva
+    })
+    .val(0.12);
 
     //Hacemos la busqueda de mis productos, uso el autocomplete
     $('input[name="search"]').autocomplete({

@@ -27,7 +27,7 @@ class SaleCreateView(LoginRequiredMixin, ValidatePermissionRequiredMixin, Create
             action = request.POST['action']
             if action == 'search_products':
                 data = []
-                prods = Product.objects.filter(name__icontains=request.POST['term']) #Buscamos por el nombre, y recibo la variable que va a contener la busqueda, en este caso la variable term
+                prods = Product.objects.filter(name__icontains=request.POST['term'])[0:10] #Buscamos por el nombre, y recibo la variable que va a contener la busqueda, en este caso la variable term
                 # Itero los productos
                 for i in prods:
                     item = i.toJSON() #Uso el diccionario ya creado
