@@ -1,3 +1,4 @@
+var tblProducts; // Para recuperar los objetos y la asignamos al datatable
 //Creo una variable para almacenar los datos, uso codigo javascritp y luego la envio por ajax
 var vents = {
     //Va a tener todo lo que tiene mi cabecera y mi detalle
@@ -41,8 +42,7 @@ var vents = {
     list: function () {
         //Coloco la funcion antes de que se presente el listado
         this.calculate_invoice();
-
-        $('#tblProducts').DataTable({
+        tblProducts = $('#tblProducts').DataTable({
             responsive: true,
             autoWidth: false,
             destroy: true,
@@ -79,7 +79,7 @@ var vents = {
                     class: 'text-center',
                     orderable: false,
                     render: function (data, type, row) {
-                        return '<input type="text" name="cant" class="form-control form-control-sm" autocomplete="off" value="'+row.cant+'">';
+                        return '<input type="text" name="cant" class="form-control form-control-sm input-sm" autocomplete="off" value="'+row.cant+'">';
                     }
                 },
                 {
@@ -91,6 +91,16 @@ var vents = {
                     }
                 },
             ],
+            // rowCallback lo uso para modificar valores en la tabla cuando modifico otros valores
+            rowCallback( row, data, displayNum, displayIndex, dataIndex){
+                //Para encontrar el componente y luego le agregamos el tocuhpin
+                $(row).find('input[name="cant"]').TouchSpin({
+                    min: 1,
+                    max: 1000000000,
+                    stepinterval: 1,
+                });
+
+            },
             initComplete: function (settings, json) {
 
             }
@@ -167,5 +177,20 @@ $(function () {
             vents.add(ui.item); 
             $(this).val(''); //Limpio el buscador cada vez que agrego un producto
         }
+    });
+
+    //Para el evento de añadir la cantidad a misproductos
+    $('#tblProducts tbody').on('change', 'input[name="cant"]', function () {
+        console.clear();
+        var cant = parseInt($(this).val());
+        //Para concoer la poisicon y que no se me crree un producto cada vez que agrego uno nuevo
+        var tr = tblProducts.cell($(this).closest('td, li')).index(); // Con esto se cual es pa posicion
+        vents.items.products[tr.row].cant = cant; //Modifico la cantidad segund su posicion colocandole la variable cant
+        //Calculamos la factura
+        vents.calculate_invoice();
+        //ESta parte la uso para obtener el node y haci modificar en linea los ubtotales, codigo sacado de la documentacion de datatable
+        //La posicion es la 5 que es la del subtotal y empiezo en 1
+        //DEbe de ser d ebajo luego que se calcule la factura
+        $('td:eq(5)',tblProducts.row(tr.row).node()).html('$' + vents.items.products[tr.row].subtotal.toFixed(2));
     });
 });
