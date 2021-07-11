@@ -62,7 +62,7 @@ var vents = {
                     class: 'text-center',
                     orderable: false,
                     render: function (data, type, row) {
-                        return '<a rel="remove" class="btn btn-danger btn-xs btn-flat"><i class="fas fa-trash-alt"></i></a>';
+                        return '<a rel="remove" class="btn btn-danger btn-xs btn-flat" style="color: white;"><i class="fas fa-trash-alt"></i></a>';
                     }
                 },
                 {
@@ -179,8 +179,24 @@ $(function () {
         }
     });
 
+    $('.btnRemoveAll').on('click', function () {
+        if (vents.items.products.length === 0) return false;
+        alert_action('Notificacion', 'Estas seguro de eliminar todos los registros?', function () {
+            vents.items.products = []; //Para elimiar todo le decimos al array de productos que vuelva empezar de 0
+            vents.list(); 
+        });
+    });
+
     //Para el evento de añadir la cantidad a misproductos
-    $('#tblProducts tbody').on('change', 'input[name="cant"]', function () {
+    $('#tblProducts tbody').
+        on('click', 'a[rel="remove"]', function () {
+            var tr = tblProducts.cell($(this).closest('td, li')).index(); // Trabajo c on el elemnto de cantidad para tener la posicion
+            alert_action('Notificacion', 'Estas seguro de eliminar el producto?', function () {
+                vents.items.products.splice(tr.row,1); //Uso mi array de columnas para estar en posicion y eliminar
+                vents.list();//Actualizo el listaod
+            });
+        })
+        .on('change', 'input[name="cant"]', function () {
         console.clear();
         var cant = parseInt($(this).val());
         //Para concoer la poisicon y que no se me crree un producto cada vez que agrego uno nuevo
