@@ -209,4 +209,34 @@ $(function () {
         //DEbe de ser d ebajo luego que se calcule la factura
         $('td:eq(5)',tblProducts.row(tr.row).node()).html('$' + vents.items.products[tr.row].subtotal.toFixed(2));
     });
+
+    //Para borrar los datos del buscador
+    $('.btnClearSearch').on('click', function () {
+       $('input[name="search"]').val('').focus();
+    });
+
+    //Codigo para hacer el envio de los datos
+    // event submit
+    $('form').on('submit', function (e) {
+        e.preventDefault();
+        
+        //Para validar que tiene los datos guardados
+        if(vents.items.products.length === 0){
+            message_error('Debe almenos tener un item en su detalle de venta');
+            return false;
+        }
+        //Ingresamos el cliente y la fecha de registro
+        vents.items.date_joined = $('input[name="date_joined"]').val();
+        vents.items.cli = $('select[name="cli"]').val();
+        var parameters = new FormData();
+        //Mandamos los parametros
+        parameters.append('action', $('input[name="action"]').val());      
+        parameters.append('vents', JSON.stringify(vents.items));  //Lo convierto en un json legible para leerlo e iterarlo    
+        submit_with_ajax(window.location.pathname, 'Notificación', '¿Estas seguro de realizar la siguiente acción?', parameters, function () {
+            location.href = '/erp/dashboard/';
+        });
+    });
+
+    //Para listar el datatable
+    vents.list();
 });

@@ -23,6 +23,7 @@
 {% endblock %}
 
 {% block content %}
+<form method="POST">
     <div class="card card-primary">
         <div class="card-header">
             <h3 class="card-title">
@@ -51,7 +52,7 @@
                                     <input type="text" class="form-control" name="search"
                                             placeholder="Ingrese una descripcion de producto" autocomplete="off">
                                     <span class="input-group-append">
-                                      <button type="button" class="btn btn-danger btn-flat"><i class="fas fa-times"></i></button>
+                                      <button type="button" class="btn btn-danger btn-flat btnClearSearch"><i class="fas fa-times"></i></button>
                                     </span>
                                 </div>
                                 <hr>
@@ -84,6 +85,7 @@
                           <h3 class="card-title"><i class="fas fa-shopping-cart"></i> Datos de la factura</h3>
                         </div>
                         <div class="card-body">
+                            <input type="hidden" name="action" value="{{ action }}">
                             <div class="form-group">
                                 <label>Fecha de venta: </label>
                                     {{ form.date_joined }}
@@ -118,14 +120,14 @@
             <!-- /Card copiado de la pagina de adminlte -->
         </div>
         <div class="card-footer">
-            {% block buttons_list %}
-                <a class="btn btn-primary btn-flat btnTest">
+                <button type="submit" class="btn btn-primary btn-flat btnTest">
                     <i class="fas fa-plus"></i> Nuevo registro
-                </a>
+                </button>
                 <a href="{{ list_url }}" class="btn btn-success btn-flat">
                     <i class="fas fa-sync"></i> Actualizar
                 </a>
-            {% endblock %}
         </div>
     </div>
+</form>
+    
 {% endblock %}
