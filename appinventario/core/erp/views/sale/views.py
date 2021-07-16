@@ -12,11 +12,46 @@ from core.erp.mixins import ValidatePermissionRequiredMixin
 from core.erp.models import Product, Sale, DetSale
 from django.views.generic import CreateView, ListView, DeleteView
 
+class SaleListView(LoginRequiredMixin, ValidatePermissionRequiredMixin, ListView):
+    model = Sale
+    template_name = 'sale/list.html'
+    permission_required = 'erp.view_sale'
+
+    @method_decorator(csrf_exempt)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        data = {}
+        try:
+            action = request.POST['action']
+            if action == 'searchdata':
+                data = []
+                for i in Sale.objects.all():
+                    data.append(i.toJSON())
+            elif action == 'search_details_prod': #Para ver los detalles usando el id
+                data = []
+                for i in DetSale.objects.filter(sale_id=request.POST['id']): #El id del sale de la venta debe de ser igual al que me lelgo como parametro
+                    data.append(i.toJSON())
+            else:
+                data['error'] = 'Ha ocurrido un error'
+        except Exception as e:
+            data['error'] = str(e)
+        return JsonResponse(data, safe=False)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Listado de Ventas'
+        context['create_url'] = reverse_lazy('erp:sale_create')
+        context['list_url'] = reverse_lazy('erp:sale_list')
+        context['entity'] = 'Ventas'
+        return context
+
 class SaleCreateView(LoginRequiredMixin, ValidatePermissionRequiredMixin, CreateView):
     model =  Sale
     form_class = SaleForm
     template_name = 'sale/create.html' 
-    success_url = reverse_lazy('index')
+    success_url = reverse_lazy('erp:sale_list')
     permission_required = 'erp.add_sale'
     url_redirect = success_url
 
@@ -71,4 +106,30 @@ class SaleCreateView(LoginRequiredMixin, ValidatePermissionRequiredMixin, Create
         context['entity'] = 'Ventas'
         context['list_url'] = self.success_url
         context['action'] = 'add' #Defino la accion que voy a hacer en el post, para hacerlo mas dinamico
+        return context
+
+class SaleDeleteView(LoginRequiredMixin, ValidatePermissionRequiredMixin, DeleteView):
+    model = Sale
+    template_name = 'sale/delete.html'
+    success_url = reverse_lazy('erp:sale_list')
+    permission_required = 'erp.delete_sale'
+    url_redirect = success_url
+
+    def dispatch(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        return super().dispatch(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        data = {}
+        try:
+            self.object.delete()
+        except Exception as e:
+            data['error'] = str(e)
+        return JsonResponse(data)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Eliminación de una Venta'
+        context['entity'] = 'Ventas'
+        context['list_url'] = self.success_url
         return context

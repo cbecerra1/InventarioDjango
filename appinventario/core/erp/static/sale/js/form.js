@@ -233,7 +233,7 @@ $(function () {
         parameters.append('action', $('input[name="action"]').val());      
         parameters.append('vents', JSON.stringify(vents.items));  //Lo convierto en un json legible para leerlo e iterarlo    
         submit_with_ajax(window.location.pathname, 'Notificación', '¿Estas seguro de realizar la siguiente acción?', parameters, function () {
-            location.href = '/erp/dashboard/';
+            location.href = '/erp/sale/list/';
         });
     });
 
