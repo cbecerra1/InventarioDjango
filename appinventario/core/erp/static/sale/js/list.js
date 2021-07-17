@@ -1,9 +1,36 @@
 var tblSale;
 
+function format ( d ) {
+    console.log(d); //Para ver si me llega la info antes de iterar
+    var html = '<table class="table">';
+     html += '<thead class="table-dark">';
+     html += '<tr><th scope="col">Productos</th>';
+     html += '<th scope="col">Categoria</th>';
+     html += '<th scope="col">PVP</th>';
+     html += '<th scope="col">Cantidad</th>';
+     html += '<th scope="col">Subtotal</th></tr>';
+     html += '</thead>';
+     html += '<tbody>';
+     //Iteramos el array det, y se itere por clave valor
+     $.each(d.det, function (key, value) {
+        html += '<tr>'
+        html += '<td>'+value.prod.name+'</td>'
+        html += '<td>'+value.prod.cat.name+'</td>'
+        html += '<td>'+value.price+'</td>'
+        html += '<td>'+value.cant+'</td>'
+        html += '<td>'+value.subtotal+'</td>'
+        html += '</tr>';
+     });
+     html += '</tbody>';
+     return html;
+
+}
+
 $(function () {
 
     tblSale = $('#data').DataTable({
-        responsive: true,
+        //responsive: true,
+        scrollX: true,
         autoWidth: false,
         destroy: true,
         deferRender: true,
@@ -16,7 +43,13 @@ $(function () {
             dataSrc: ""
         },
         columns: [
-            {"data": "id"},
+            //Para colocar el icono en la primera posicion
+            {
+                "className":      'details-control',
+                "orderable":      false,
+                "data":           null,
+                "defaultContent": ''
+            },
             {"data": "cli.names"},
             {"data": "date_joined"},
             {"data": "subtotal"},
@@ -102,5 +135,20 @@ $(function () {
 
             //Llamo mi modal
             $('#myModelDet').modal('show');
+        })
+        .on('click', 'td.details-control', function () {
+            var tr = $(this).closest('tr');
+            var row = tblSale.row( tr );
+     
+            if ( row.child.isShown() ) {
+                // This row is already open - close it
+                row.child.hide();
+                tr.removeClass('shown');
+            }
+            else {
+                // Open this row
+                row.child( format(row.data()) ).show();
+                tr.addClass('shown');
+            }
         });
 });
