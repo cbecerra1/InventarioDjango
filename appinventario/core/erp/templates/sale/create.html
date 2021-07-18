@@ -121,7 +121,7 @@
         </div>
         <div class="card-footer">
                 <button type="submit" class="btn btn-primary btn-flat btnTest">
-                    <i class="fas fa-plus"></i> Nuevo registro
+                    <i class="fas fa-save"></i> Guardar registro
                 </button>
                 <a href="{{ list_url }}" class="btn btn-success btn-flat">
                     <i class="fas fa-sync"></i> Actualizar
@@ -129,5 +129,11 @@
         </div>
     </div>
 </form>
+
+<!-- JavaScript para editar sale -->
+<script>
+    vents.items.products = {{ det|safe }};
+    vents.list();
+</script>
     
 {% endblock %}

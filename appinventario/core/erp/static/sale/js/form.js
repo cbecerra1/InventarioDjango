@@ -238,5 +238,5 @@ $(function () {
     });
 
     //Para listar el datatable
-    vents.list();
+    // vents.list(); //Lo quito porque ya lo estoy listando en el script de la plantilla
 });

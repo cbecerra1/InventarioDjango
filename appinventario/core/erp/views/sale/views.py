@@ -10,7 +10,7 @@ from django.views.decorators.csrf import csrf_exempt
 from core.erp.forms import SaleForm
 from core.erp.mixins import ValidatePermissionRequiredMixin
 from core.erp.models import Product, Sale, DetSale
-from django.views.generic import CreateView, ListView, DeleteView
+from django.views.generic import CreateView, ListView, DeleteView, UpdateView
 
 class SaleListView(LoginRequiredMixin, ValidatePermissionRequiredMixin, ListView):
     model = Sale
@@ -106,6 +106,81 @@ class SaleCreateView(LoginRequiredMixin, ValidatePermissionRequiredMixin, Create
         context['entity'] = 'Ventas'
         context['list_url'] = self.success_url
         context['action'] = 'add' #Defino la accion que voy a hacer en el post, para hacerlo mas dinamico
+        context['det'] = [] #CReo esta vairable porque la cree en editar pero se envia vacia
+        return context
+
+class SaleUpdateView(LoginRequiredMixin, ValidatePermissionRequiredMixin, UpdateView):
+    model =  Sale
+    form_class = SaleForm
+    template_name = 'sale/create.html' 
+    success_url = reverse_lazy('erp:sale_list')
+    permission_required = 'erp.change_sale'
+    url_redirect = success_url
+
+    @method_decorator(csrf_exempt)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+    def post(self, request, *arg, **kwargs):
+        data = {}
+        try:
+            action = request.POST['action']
+            if action == 'search_products':
+                data = []
+                prods = Product.objects.filter(name__icontains=request.POST['term'])[0:10] 
+                for i in prods:
+                    item = i.toJSON() 
+                    item['value'] = i.name 
+                    data.append(item)
+            elif action == 'edit':
+                with transaction.atomic(): 
+                    vents = json.loads(request.POST['vents']) 
+                    #sale = Sale.objects.get(pk=self.get_object().id) #MAnera 1
+                    sale = self.get_object() #MAnera 2, self.get_object() me devuelde la instancia del objeto que estoy editando
+                    sale.date_joined = vents['date_joined']
+                    sale.cli_id = vents['cli']
+                    sale.subtotal = float(vents['subtotal'])
+                    sale.iva = float(vents['iva'])
+                    sale.total = float(vents['total'])
+                    sale.save()
+                    sale.detsale_set.all().delete() #Eliminamos la data anterior para evitar duplicidad
+
+                    for i in vents['products']:
+                        det = DetSale() 
+                        det.sale_id = sale.id
+                        det.prod_id = i['id']
+                        det.cant = int(i['cant'])
+                        det.price = float(i['pvp'])
+                        det.subtotal = float(i['subtotal'])
+                        det.save()
+            else:
+                data['error'] = 'No ha ingresado a ninguna opción'
+        except Exception as e:
+            data['error'] = str(e)
+        return JsonResponse(data, safe=False) 
+
+    #Metodo para traer los detalles de mi factura
+    def get_details_product(self):
+        data = []
+        try:
+            for i in DetSale.objects.filter(sale_id=self.get_object().id): #Me da una instancia de la factura y accedemos a sus propiedades y los itero
+            #DetSale.objects.filter(sale_id=self.kwargs['pk']) #Otra manera
+                #Para que no se dañe mi estructura
+                item = i.prod.toJSON() #TRaemos el producto, ahora lo podemos desmenuzar
+                item['cant'] = i.cant #Le aumento la cantidad porque es el unico valor que necesito, los otros ya estan o me los calcula
+                #EL subtotal no se envia porque se hace automaticamente con los procesos
+                data.append(item)
+        except:
+            pass
+        return data
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Edición de una venta'
+        context['entity'] = 'Ventas'
+        context['list_url'] = self.success_url
+        context['action'] = 'edit' 
+        context['det'] = json.dumps(self.get_details_product()) #Enviamos el metodo dentro de mi contexto
         return context
 
 class SaleDeleteView(LoginRequiredMixin, ValidatePermissionRequiredMixin, DeleteView):
