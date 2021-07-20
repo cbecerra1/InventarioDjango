@@ -109,6 +109,31 @@ var vents = {
 
 };
 
+function formatRepo(repo) {
+    if (repo.loading) {
+        return repo.text;
+    }
+
+    var option = $(
+        '<div class="wrapper container">'+
+            '<div class="row">' +
+                '<div class="col-lg-1">' +
+                '<img src="' + repo.image + '" class="img-fluid img-thumbnail d-block mx-auto rounded">' +
+                '</div>' +
+                '<div class="col-lg-11 text-left shadow-sm">' +
+                    //'<br>' +
+                    '<p style="margin-bottom: 0;">' +
+                    '<b>Nombre:</b> ' + repo.name + '<br>' +
+                    '<b>Categoría:</b> ' + repo.cat.name + '<br>' +
+                    '<b>PVP:</b> <span class="badge badge-warning">$'+repo.pvp+'</span>'+
+                    '</p>' +
+                '</div>' +
+            '</div>' +
+        '</div>');
+
+    return option;
+};
+
 $(function () {
     $('.select2').select2({
         theme: "bootstrap4",
@@ -143,7 +168,7 @@ $(function () {
     .val(0.12);
 
     //Hacemos la busqueda de mis productos, uso el autocomplete
-    $('input[name="search"]').autocomplete({
+    /*$('input[name="search"]').autocomplete({
         //en source usare una funcion para que por medio de ajax se conecte a mis modelos y mis bases de datos
         source: function (request, response) {
             //Hacemos los que es ajax
@@ -177,7 +202,7 @@ $(function () {
             vents.add(ui.item); 
             $(this).val(''); //Limpio el buscador cada vez que agrego un producto
         }
-    });
+    });*/
 
     $('.btnRemoveAll').on('click', function () {
         if (vents.items.products.length === 0) return false;
@@ -239,4 +264,38 @@ $(function () {
 
     //Para listar el datatable
     // vents.list(); //Lo quito porque ya lo estoy listando en el script de la plantilla
+
+    $('select[name="search"]').select2({
+        theme: "bootstrap4",
+        language: 'es',
+        allowClear: true,
+        ajax: {
+            delay: 250,
+            type: 'POST', 
+            url: window.location.pathname,
+            data: function (params) {
+                var queryParameters = {
+                    term: params.term,
+                    action: 'search_products'
+                }
+                return queryParameters;
+            },
+            processResults: function (data) {
+                return {
+                    results: data
+                };
+            },
+        },
+        placeholder: 'Ingrese una descripción',
+        minimumInputLength: 1,
+        templateResult: formatRepo,
+    }).on('select2:select', function (e) {
+        var data = e.params.data;
+        data.cant = 1;
+        data.subtotal = 0.00;
+        vents.add(data);
+        $(this).val('').trigger('change.select2'); //Selecionamos valor vacios y usamos trigger para limpiar
+    });
+
+    vents.list();
 });

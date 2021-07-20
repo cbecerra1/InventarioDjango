@@ -70,7 +70,8 @@ class SaleCreateView(LoginRequiredMixin, ValidatePermissionRequiredMixin, Create
                 for i in prods:
                     item = i.toJSON() #Uso el diccionario ya creado
                     #Devuelvo un array con un diccionario de los productos
-                    item['value'] = i.name #El autocomplete recive una variable llamada value que se necestia en la busqueda a media que se teclea
+                    #item['value'] = i.name #El autocomplete recive una variable llamada value que se necestia en la busqueda a media que se teclea
+                    item['text'] = i.name #Porque asi recibe la data select2
                     #item['cant'] = 1 es la otra opcion quitando la de form.js, prefiero esta
                     data.append(item)
             elif action == 'add':
@@ -130,7 +131,8 @@ class SaleUpdateView(LoginRequiredMixin, ValidatePermissionRequiredMixin, Update
                 prods = Product.objects.filter(name__icontains=request.POST['term'])[0:10] 
                 for i in prods:
                     item = i.toJSON() 
-                    item['value'] = i.name 
+                    #item['value'] = i.name 
+                    item['text'] = i.name #Porque asi recibe la data select2
                     data.append(item)
             elif action == 'edit':
                 with transaction.atomic(): 
