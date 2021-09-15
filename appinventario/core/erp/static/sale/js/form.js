@@ -209,17 +209,22 @@ $(function () {
         alert_action('Notificacion', 'Estas seguro de eliminar todos los registros?', function () {
             vents.items.products = []; //Para elimiar todo le decimos al array de productos que vuelva empezar de 0
             vents.list(); 
+        }, function () {
+            
         });
     });
 
     //Para el evento de añadir la cantidad a misproductos
+    // event cant
     $('#tblProducts tbody').
         on('click', 'a[rel="remove"]', function () {
             var tr = tblProducts.cell($(this).closest('td, li')).index(); // Trabajo c on el elemnto de cantidad para tener la posicion
             alert_action('Notificacion', 'Estas seguro de eliminar el producto?', function () {
                 vents.items.products.splice(tr.row,1); //Uso mi array de columnas para estar en posicion y eliminar
                 vents.list();//Actualizo el listaod
-            });
+                }, function () {
+                    
+                });
         })
         .on('change', 'input[name="cant"]', function () {
         console.clear();
@@ -257,8 +262,14 @@ $(function () {
         //Mandamos los parametros
         parameters.append('action', $('input[name="action"]').val());      
         parameters.append('vents', JSON.stringify(vents.items));  //Lo convierto en un json legible para leerlo e iterarlo    
-        submit_with_ajax(window.location.pathname, 'Notificación', '¿Estas seguro de realizar la siguiente acción?', parameters, function () {
-            location.href = '/erp/sale/list/';
+        submit_with_ajax(window.location.pathname, 'Notificación', '¿Estas seguro de realizar la siguiente acción?', parameters, function (response) {
+            alert_action('Notificación', 'Desea imprimir la factura?', function () {
+                window.open('/erp/sale/invoice/pdf/'+response.id+'/','_blank'); //Para que me habra en una pestaña nueva la factura
+                location.href = '/erp/sale/list/'; //Se ejecuet la lista
+            }, function () {
+                location.href = '/erp/sale/list/';   
+            });
+
         });
     });
 

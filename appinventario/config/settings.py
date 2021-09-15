@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'core.homepage',
     'core.login',
     'core.user',
+    'core.reports',
 ]
 
 MIDDLEWARE = [
@@ -152,7 +153,10 @@ LOGIN_URL = '/login/'
 # Base url to serve media files
 MEDIA_URL = '/media/'
 # Path where media is stored
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_ROOT = BASE_DIR / 'media/' #Se le agrego '/' al final por si me da problema borrarlo!
 
 #Cuando personalizo mi usuario
 AUTH_USER_MODEL = 'user.User'
+
+#Para el manejo de archivos estaticos en pdf
+STATIC_ROOT = BASE_DIR / 'staticfiles/'
